@@ -18,6 +18,6 @@ void loop() {
     volume--;
   }
   
-  Serial.print("Volume");
+  Serial.print("Volume: ");
   Serial.println(volume);
 }
