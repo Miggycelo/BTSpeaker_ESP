@@ -1,8 +1,11 @@
 #include <Arduino.h>
 
 const int DT_PIN = 26;
+<<<<<<< HEAD
 const int CLK_PIN = 25;
 
+=======
+>>>>>>> 545556589de361557e88cd9b7840a5d237ce8eaf
 int volume = 0;
 
 void setup(){
@@ -18,6 +21,7 @@ void loop() {
     volume++;
   } else{
     volume--;
+<<<<<<< HEAD
   }
   
   Serial.print("Volume: ");
@@ -33,5 +37,10 @@ void loop() {
     volume++;
   } else{
     volume--;
+=======
+>>>>>>> 545556589de361557e88cd9b7840a5d237ce8eaf
   }
+  
+  Serial.print("Volume: ");
+  Serial.println(volume);
 }
