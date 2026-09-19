@@ -1,31 +1,37 @@
 #include <Arduino.h>
 
-const int LED_PIN = 2;
+const int DT_PIN = 26;
+const int CLK_PIN = 25;
 
-unsigned long previousMillis  = 0;
-const unsigned long interval = 2000;
-
-bool ledstate = false;
+int volume = 0;
 
 void setup(){
   Serial.begin(115200);
-
-  pinMode(LED_PIN, OUTPUT);
-
+  pinMode(DT_PIN, INPUT);
   Serial.println("ESP32 started");
-
 }
 
 void loop() {
-  unsigned long currentMillis = millis();
+  int dstate = digitalRead(DT_PIN);
 
-  if (currentMillis - previousMillis >= interval) {
-      previousMillis = currentMillis;
+  if (dstate == HIGH){
+    volume++;
+  } else{
+    volume--;
+  }
+  
+  Serial.print("Volume: ");
+  Serial.println(volume);
 
-      ledstate = !ledstate;
-      digitalWrite(LED_PIN, ledstate);
+  attachInterrupt(digitalPinToInterrupt(CLK_PIN), readEncoder, CHANGE);
+}
 
-      Serial.print("LED state: ");
-      Serial.println(ledstate);
+ void IRAM_ATTR readEncoder() {
+  int dstate = digitalRead(DT_PIN);
+
+  if (dstate == HIGH){
+    volume++;
+  } else{
+    volume--;
   }
 }
