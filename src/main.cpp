@@ -3,10 +3,16 @@
 const int DT_PIN = 26;
 const int CLK_PIN = 25;
 int lastvolume = 0;
-
 volatile int volume = 0;
+volatile unsigned long lastInterruptTime = 0;
 
 void IRAM_ATTR readEncoder() {
+  unsigned long now = millis();
+  if (now - lastInterruptTime < 5){
+    return;
+  }
+  lastInterruptTime = now;
+  
   int dstate = digitalRead(DT_PIN);
   int clkstate = digitalRead(CLK_PIN);
 
