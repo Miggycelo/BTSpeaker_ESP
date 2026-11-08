@@ -7,6 +7,7 @@ int lastvolume = 0;
 volatile int volume = 0;
 volatile unsigned long lastInterruptTime = 0;
 int lastButtonState = HIGH;
+unsigned long lastpressedtime = 0;
 
 void IRAM_ATTR readEncoder() {
   unsigned long now = millis();
@@ -41,9 +42,12 @@ void loop() {
       Serial.println(volume);
   }
 
-  if (digitalRead(SW_PIN) == LOW && lastButtonState == HIGH){
+  int buttonState = digitalRead(SW_PIN);
+  unsigned long now = millis();
+
+  if (buttonState == LOW && lastButtonState == HIGH && (now - lastInterruptTime) > 200) {
     Serial.println("Button pressed");
-      delay(50);
   }
   lastButtonState = digitalRead(SW_PIN);
+
 }
