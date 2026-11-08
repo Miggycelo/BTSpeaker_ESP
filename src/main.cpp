@@ -8,11 +8,11 @@ volatile unsigned long lastInterruptTime = 0;
 
 void IRAM_ATTR readEncoder() {
   unsigned long now = millis();
-  if (now - lastInterruptTime < 5){
+  if (now - lastInterruptTime < 20){
     return;
   }
   lastInterruptTime = now;
-  
+
   int dstate = digitalRead(DT_PIN);
   int clkstate = digitalRead(CLK_PIN);
 
@@ -25,9 +25,9 @@ void IRAM_ATTR readEncoder() {
 
 void setup(){
   Serial.begin(115200);
-  pinMode(DT_PIN, INPUT);
+  pinMode(DT_PIN, INPUT_PULLUP);
   Serial.println("ESP32 started");
-  pinMode(CLK_PIN, INPUT);
+  pinMode(CLK_PIN, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(CLK_PIN), readEncoder, CHANGE);
 }
 
