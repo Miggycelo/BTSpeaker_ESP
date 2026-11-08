@@ -36,12 +36,6 @@ void IRAM_ATTR readEncoder() {
 
   if (volume > MAX_VOLUME) volume = MAX_VOLUME;
   if (volume < 0) volume = 0;
-
-  if(volume < 0){
-    volume = 0;
-  } else if (volume > MAX_VOLUME){
-    volume = MAX_VOLUME;
-  }
 }
 
 void setup(){
@@ -71,14 +65,13 @@ void loop() {
     unsavedChange = false;
   }
 
-  int buttonState = digitalRead(SW_PIN);
-  unsigned long now = millis();
+ int buttonState = digitalRead(SW_PIN);
+unsigned long now = millis();
 
-  if (buttonState == LOW && lastButtonState == HIGH && (now - lastInterruptTime) > 200) {
+  if (buttonState == LOW && lastButtonState == HIGH && (now - lastpressedtime) > 200) {
+    lastpressedtime = now;
     Serial.println("Button pressed");
   }
-  lastButtonState = digitalRead(SW_PIN);
-
-  
+  lastButtonState = buttonState;
 
 }
