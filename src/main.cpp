@@ -2,9 +2,11 @@
 
 const int DT_PIN = 26;
 const int CLK_PIN = 25;
+const int SW_PIN = 27;
 int lastvolume = 0;
 volatile int volume = 0;
 volatile unsigned long lastInterruptTime = 0;
+int lastButtonState = HIGH;
 
 void IRAM_ATTR readEncoder() {
   unsigned long now = millis();
@@ -28,6 +30,7 @@ void setup(){
   pinMode(DT_PIN, INPUT_PULLUP);
   Serial.println("ESP32 started");
   pinMode(CLK_PIN, INPUT_PULLUP);
+  pinMode(SW_PIN, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(CLK_PIN), readEncoder, CHANGE);
 }
 
@@ -37,4 +40,10 @@ void loop() {
       Serial.print("Volume: ");
       Serial.println(volume);
   }
+
+  if (digitalRead(SW_PIN) == LOW && lastButtonState == HIGH){
+    Serial.println("Button pressed");
+      delay(50);
+  }
+  lastButtonState = digitalRead(SW_PIN);
 }
