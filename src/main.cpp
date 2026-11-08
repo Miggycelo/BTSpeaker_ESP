@@ -1,7 +1,12 @@
 #include <Arduino.h>
 #include "AudioTools.h"
 #include "BluetoothA2DPSink.h"
+#include <Preferences.h>
 
+Preferences prefs;
+const int MAX_VOLUME = 100;
+unsigned long lastChangeTime = 0;
+bool unsavedChange = false;
 I2SStream i2s;
 BluetoothA2DPSink a2dp_sink(i2s);
 const int DT_PIN = 26;
@@ -12,8 +17,6 @@ volatile int volume = 0;
 volatile unsigned long lastInterruptTime = 0;
 int lastButtonState = HIGH;
 unsigned long lastpressedtime = 0;
-const int MAX_VOLUME = 100;
-
 
 void IRAM_ATTR readEncoder() {
   unsigned long now = millis();
@@ -31,6 +34,9 @@ void IRAM_ATTR readEncoder() {
     volume++;
   }
 
+  if (volume > MAX_VOLUME) volume = MAX_VOLUME;
+  if (volume < 0) volume = 0;
+
   if(volume < 0){
     volume = 0;
   } else if (volume > MAX_VOLUME){
@@ -40,6 +46,9 @@ void IRAM_ATTR readEncoder() {
 
 void setup(){
   Serial.begin(115200);
+  prefs.begin("speaker", false);
+  volume = prefs.getInt("volume", 0);
+  lastvolume = volume;
   pinMode(DT_PIN, INPUT_PULLUP);
   Serial.println("ESP32 started");
   pinMode(CLK_PIN, INPUT_PULLUP);
@@ -53,6 +62,13 @@ void loop() {
     lastvolume = volume;
       Serial.print("Volume: ");
       Serial.println(volume);
+
+      lastChangeTime = millis();
+      unsavedChange = true;
+  }
+  if (unsavedChange && millis() - lastChangeTime > 2000) {
+    prefs.putInt("volume", volume);
+    unsavedChange = false;
   }
 
   int buttonState = digitalRead(SW_PIN);
@@ -62,5 +78,7 @@ void loop() {
     Serial.println("Button pressed");
   }
   lastButtonState = digitalRead(SW_PIN);
+
+  
 
 }
