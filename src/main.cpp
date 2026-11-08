@@ -1,5 +1,9 @@
 #include <Arduino.h>
+#include "AudioTools.h"
+#include "BluetoothA2DPSink.h"
 
+I2SStream i2s;
+BluetoothA2DPSink a2dp_sink(i2s);
 const int DT_PIN = 26;
 const int CLK_PIN = 25;
 const int SW_PIN = 27;
@@ -8,6 +12,8 @@ volatile int volume = 0;
 volatile unsigned long lastInterruptTime = 0;
 int lastButtonState = HIGH;
 unsigned long lastpressedtime = 0;
+const int MAX_VOLUME = 100;
+
 
 void IRAM_ATTR readEncoder() {
   unsigned long now = millis();
@@ -24,6 +30,12 @@ void IRAM_ATTR readEncoder() {
   } else{
     volume++;
   }
+
+  if(volume < 0){
+    volume = 0;
+  } else if (volume > MAX_VOLUME){
+    volume = MAX_VOLUME;
+  }
 }
 
 void setup(){
@@ -33,6 +45,7 @@ void setup(){
   pinMode(CLK_PIN, INPUT_PULLUP);
   pinMode(SW_PIN, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(CLK_PIN), readEncoder, CHANGE);
+  a2dp_sink.start("A.M. Speaker");
 }
 
 void loop() {
