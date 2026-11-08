@@ -2,6 +2,7 @@
 
 const int DT_PIN = 26;
 const int CLK_PIN = 25;
+int lastvolume = 0;
 
 volatile int volume = 0;
 
@@ -25,6 +26,8 @@ void setup(){
 }
 
 void loop() {
-  Serial.print("Volume: ");
-  Serial.println(volume);
-}
+  if (volume != lastvolume) {
+    lastvolume = volume;
+      Serial.print("Volume: ");
+      Serial.println(volume);
+  }
